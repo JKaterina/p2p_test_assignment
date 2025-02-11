@@ -3,6 +3,8 @@ from mev_block_analyzer import *
 from rearrange_block import main as rb
 from transaction_order_check import *
 
+API_KEY = st.secrets["API_KEY"]
+
 st.title("MEV Block Analyzer for P2P")
 block_number = st.number_input("Select block to analyze:", value=21821918)
 
