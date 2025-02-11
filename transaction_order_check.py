@@ -38,16 +38,16 @@ def check_transaction_order(transactions):
     sorted_gas_fees = sorted(gas_fees, key=lambda x: x[1], reverse=True)
 
     if gas_fees == sorted_gas_fees:
-        print("✅ Transactions are ordered by gas price (likely non-MEV block).")
+        return "✅ Transactions are ordered by gas price (likely non-MEV block)."
     else:
-        print("❌ Transactions are NOT ordered by gas price (potential MEV block).")
+        return "❌ Transactions are NOT ordered by gas price (potential MEV block)."
 
-def main():
-    block_number = 21821918
-    transactions = fetch_block_transactions(block_number)
+# def main():
+#     block_number = 21821918
+#     transactions = fetch_block_transactions(block_number)
 
-    if transactions:
-        check_transaction_order(transactions)
+#     if transactions:
+#         check_transaction_order(transactions)
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

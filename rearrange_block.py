@@ -129,41 +129,46 @@ def simulate_block(transactions, base_fee, block_gas_limit):
 
 # --- Main Script ---
 def main():
+    results = []  # List to store the results
+
     # 1. Fetch block data from Etherscan.
     block = fetch_block(BLOCK_NUMBER)
     base_fee = hex_to_int(block.get("baseFeePerGas", "0x0"))
     block_gas_limit = hex_to_int(block.get("gasLimit"))
     transactions = block.get("transactions", [])
-    print(f"Block {BLOCK_NUMBER} has {len(transactions)} transactions. Block gas limit: {block_gas_limit}.")
+    results.append(f"\nBlock {BLOCK_NUMBER} has {len(transactions)} transactions. Block gas limit: {block_gas_limit}.\n")
     
     # 2. Work with a subset of transactions (first NUM_TXS).
     subset_txs = transactions[START_IDX:START_IDX + NUM_TXS]
     
     # 3. For each transaction, fetch its receipt to get the actual gasUsed.
-    print("Fetching transaction receipts to extract gasUsed values...")
+    results.append("\nFetching transaction receipts to extract gasUsed values...\n")
     for tx in subset_txs:
         tx_hash = tx["hash"]
         receipt = fetch_tx_receipt(tx_hash)
         tx["gasUsed"] = hex_to_int(receipt.get("gasUsed", "0x0"))
         tip = compute_effective_priority_fee(tx, base_fee)
-        print(f"Tx {tx_hash} | gasUsed: {tx['gasUsed']} | Effective tip: {tip}")
+        results.append(f"Tx {tx_hash} | gasUsed: {tx['gasUsed']} | Effective tip: {tip}\n")
         # Pause briefly to avoid hitting rate limits.
         time.sleep(0.2)
     
     # 4. Simulate block execution for the original ordering.
     revenue_original = simulate_block(subset_txs, base_fee, block_gas_limit)
-    print("\nOriginal ordering builder revenue:", revenue_original)
+    results.append(f"\nOriginal ordering builder revenue: {revenue_original}\n")
     
     # 5. Reorder transactions by descending effective tip (as a simple heuristic).
     sorted_txs = sorted(subset_txs, key=lambda tx: compute_effective_priority_fee(tx, base_fee), reverse=True)
     revenue_reordered = simulate_block(sorted_txs, base_fee, block_gas_limit)
-    print("Reordered transactions builder revenue:", revenue_reordered)
+    results.append(f"\nReordered transactions builder revenue: {revenue_reordered}\n")
     
     # 6. Compare the results.
     if revenue_reordered > revenue_original:
-        print("\nReordering increased builder revenue in this simulation.")
+        results.append("\nReordering increased builder revenue in this simulation.\n")
     else:
-        print("\nReordering did not improve revenue in this simulation.")
+        results.append("\nReordering did not improve revenue in this simulation.\n")
+
+    # Join all results into a single string and return
+    return "".join(results)
 
 if __name__ == "__main__":
     main()
