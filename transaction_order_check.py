@@ -8,6 +8,9 @@ load_dotenv()
 # Load the API key from the environment variable
 API_KEY = os.getenv("API_KEY")
 
+API_KEY = os.environ.get("API_KEY")
+
+
 def fetch_block_transactions(block_number):
     """
     Fetch all transactions for a given block number from Etherscan.
