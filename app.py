@@ -4,7 +4,7 @@ from rearrange_block import main as rb
 from transaction_order_check import *
 
 st.title("MEV Block Analyzer for P2P")
-block_number = st.number_input("Select block to analyze:")
+block_number = st.number_input("Select block to analyze:", value=21821918)
 
 st.header("Q1: Verify that it is a MEV block")
 st.write("Check transaction order by gas fees with the function https://github.com/JKaterina/p2p_test_assignment/blob/master/transaction_order_check.py")
